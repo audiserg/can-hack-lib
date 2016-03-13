@@ -1,10 +1,6 @@
-#include <can.h>
-#include <mcp_can.h>
-
 /*
  * CanHacker.h
  *
- *  Created on: 17 ���. 2015 �.
  *      Author: Dmitry
  */
 
@@ -12,6 +8,7 @@
 #define CANHACKER_H_
 
 #include <can.h>
+#include <mcp2515.h>
 
 #define CAN_MIN_DLEN 1
 #define HEX_PER_BYTE 2
@@ -55,8 +52,8 @@ class CanHacker {
         ERROR sendFrame(const struct can_frame *);
         ERROR setLoopbackEnabled(const bool value);
         ERROR pollReceiveCan();
-        ERROR receiveCan(const MCP_CAN::RXBn rxBuffer);
-        MCP_CAN *getMcp2515();
+        ERROR receiveCan(const MCP2515::RXBn rxBuffer);
+        MCP2515 *getMcp2515();
         ERROR processInterrupt();
         Stream *getInterfaceStream();
 
@@ -70,7 +67,7 @@ class CanHacker {
         bool _listenOnly = false;
         bool _loopback = false;
         uint8_t _cs;
-        MCP_CAN *mcp2515;
+        MCP2515 *mcp2515;
         CAN_SPEED bitrate;
         bool _isConnected = false;
         Stream *_stream;
