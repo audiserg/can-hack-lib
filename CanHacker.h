@@ -50,7 +50,8 @@ class CanHacker {
         ERROR receiveCommand(const char *buffer, const int length);
         ERROR receiveCanFrame(const struct can_frame *frame);
         ERROR sendFrame(const struct can_frame *);
-        ERROR setLoopbackEnabled(const bool value);
+        ERROR enableLoopback();
+        ERROR disableLoopback();
         ERROR pollReceiveCan();
         ERROR receiveCan(const MCP2515::RXBn rxBuffer);
         MCP2515 *getMcp2515();

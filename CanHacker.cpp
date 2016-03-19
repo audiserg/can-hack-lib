@@ -62,7 +62,7 @@ CanHacker::ERROR CanHacker::connectCan() {
         writeDebugStream("\n");
         return ERROR_MCP2515_INIT_BITRATE;
     }
-    
+
     if (_loopback) {
         error = mcp2515->setLoopbackMode();
     } else if (_listenOnly) {
@@ -70,11 +70,11 @@ CanHacker::ERROR CanHacker::connectCan() {
     } else {
         error = mcp2515->setNormalMode();
     }
-    
+
     if (error != MCP2515::ERROR_OK) {
         return ERROR_MCP2515_INIT_SET_MODE;
     }
-    
+
     _isConnected = true;
     return ERROR_OK;
 }
@@ -93,7 +93,7 @@ CanHacker::ERROR CanHacker::writeCan(const struct can_frame *frame) {
     if (mcp2515->sendMessage(frame) != MCP2515::ERROR_OK) {
         return ERROR_MCP2515_SEND;
     }
-    
+
     return ERROR_OK;
 }
 
@@ -101,19 +101,19 @@ CanHacker::ERROR CanHacker::pollReceiveCan() {
     if (!isConnected()) {
         return ERROR_OK;
     }
-    
+
     while (mcp2515->checkReceive()) {
         struct can_frame frame;
         if (mcp2515->readMessage(&frame) != MCP2515::ERROR_OK) {
             return ERROR_MCP2515_READ;
         }
-    
+
         ERROR error = receiveCanFrame(&frame);
         if (error != ERROR_OK) {
             return error;
         }
     }
-    
+
     return ERROR_OK;
 }
 
@@ -121,13 +121,13 @@ CanHacker::ERROR CanHacker::receiveCan(const MCP2515::RXBn rxBuffer) {
     if (!isConnected()) {
         return ERROR_OK;
     }
-    
+
     struct can_frame frame;
     MCP2515::ERROR result = mcp2515->readMessage(rxBuffer, &frame);
     if (result == MCP2515::ERROR_NOMSG) {
         return ERROR_OK;
     }
-    
+
     if (result != MCP2515::ERROR_OK) {
         return ERROR_MCP2515_READ;
     }
@@ -149,7 +149,7 @@ CanHacker::ERROR CanHacker::receiveSetBitrateCommand(const char *buffer, const i
         writeStream(BEL);
         return ERROR_CONNECTED;
     }
-    
+
     if (length < 2) {
         writeStream(BEL);
         writeDebugStream("Bitrate command must by 2 bytes long\n");
@@ -205,7 +205,7 @@ CanHacker::ERROR CanHacker::receiveSetBitrateCommand(const char *buffer, const i
             return ERROR_INVALID_COMMAND;
             break;
     }
-    
+
     return writeStream(CR);
 }
 
@@ -221,47 +221,47 @@ CanHacker::ERROR CanHacker::processInterrupt() {
         // reset RXnOVR errors
         mcp2515->clearRXnOVR();
     }
-    
+
     if (irq & MCP2515::CANINTF_RX0IF) {
         ERROR error = receiveCan(MCP2515::RXB0);
         if (error != ERROR_OK) {
             return error;
         }
     }
-    
+
     if (irq & MCP2515::CANINTF_RX1IF) {
         ERROR error = receiveCan(MCP2515::RXB1);
         if (error != ERROR_OK) {
             return error;
         }
     }
-    
+
     /*if (irq & (MCP2515::CANINTF_TX0IF | MCP2515::CANINTF_TX1IF | MCP2515::CANINTF_TX2IF)) {
         _debugStream->print("MCP_TXxIF\r\n");
         //stopAndBlink(1);
     }*/
-     
-    
-     
+
+
+
     if (irq & MCP2515::CANINTF_WAKIF) {
         _debugStream->print("MCP_WAKIF\r\n");
-        //stopAndBlink(3);
+        mcp2515->clearInterrupts();
     }
-    
+
     if (irq & MCP2515::CANINTF_ERRIF) {
-		_debugStream->print("ERRIF\r\n");
-		
-		//return ERROR_MCP2515_MERRF;
-		mcp2515->clearMERR();
-	}
-     
+        _debugStream->print("ERRIF\r\n");
+
+        //return ERROR_MCP2515_MERRF;
+        mcp2515->clearMERR();
+    }
+
     if (irq & MCP2515::CANINTF_MERRF) {
         _debugStream->print("MERRF\r\n");
-        
+
         //return ERROR_MCP2515_MERRF;
         mcp2515->clearInterrupts();
     }
-    
+
     return ERROR_OK;
 }
 
@@ -270,7 +270,7 @@ CanHacker::ERROR CanHacker::setFilter(const uint32_t filter) {
         writeDebugStream("Filter cannot be set while connected\n");
         return ERROR_CONNECTED;
     }
-    
+
     MCP2515::RXF filters[] = {MCP2515::RXF0, MCP2515::RXF1, MCP2515::RXF2, MCP2515::RXF3, MCP2515::RXF4, MCP2515::RXF5};
     for (int i=0; i<6; i++) {
         MCP2515::ERROR result = mcp2515->setFilter(filters[i], false, filter);
@@ -278,7 +278,7 @@ CanHacker::ERROR CanHacker::setFilter(const uint32_t filter) {
             return ERROR_MCP2515_FILTER;
         }
     }
-    
+
     return ERROR_OK;
 }
 
@@ -287,7 +287,7 @@ CanHacker::ERROR CanHacker::setFilterMask(const uint32_t mask) {
         writeDebugStream("Filter mask cannot be set while connected\n");
         return ERROR_CONNECTED;
     }
-    
+
     MCP2515::MASK masks[] = {MCP2515::MASK0, MCP2515::MASK1};
     for (int i=0; i<2; i++) {
         MCP2515::ERROR result = mcp2515->setFilterMask(masks[i], false, mask);
@@ -295,7 +295,7 @@ CanHacker::ERROR CanHacker::setFilterMask(const uint32_t mask) {
             return ERROR_MCP2515_FILTER;
         }
     }
-    
+
     return ERROR_OK;
 }
 
@@ -367,19 +367,19 @@ CanHacker::ERROR CanHacker::receiveCommand(const char *buffer, const int length)
 
         case COMMAND_CLOSE_CAN_CHAN:
             return receiveCloseCommand(buffer, length);
-            
+
         case COMMAND_OPEN_CAN_CHAN:
             return receiveOpenCommand(buffer, length);
-            
+
         case COMMAND_SET_BITRATE:
             return receiveSetBitrateCommand(buffer, length);
-            
+
         case COMMAND_SET_ACR:
             return receiveSetAcrCommand(buffer, length);
-            
+
         case COMMAND_SET_AMR:
             return receiveSetAmrCommand(buffer, length);
-        
+
         case COMMAND_SET_BTR: {
             if (isConnected()) {
                 writeStream(BEL);
@@ -389,18 +389,18 @@ CanHacker::ERROR CanHacker::receiveCommand(const char *buffer, const int length)
             writeDebugStream("SET_BTR not supported\n");
             return writeStream(CR);
         }
-        
+
         case COMMAND_LISTEN_ONLY:
             return receiveListenOnlyCommand(buffer, length);
-        
+
         case COMMAND_TIME_STAMP:
             return receiveTimestampCommand(buffer, length);
-            
+
         case COMMAND_WRITE_REG:
         case COMMAND_READ_REG: {
             return writeStream(CR);
         }
-        
+
         case COMMAND_READ_STATUS:
         case COMMAND_READ_ECR:
         case COMMAND_READ_ALCR: {
@@ -462,7 +462,7 @@ CanHacker::ERROR CanHacker::parseTransmit(const char *buffer, int length, struct
             return ERROR_INVALID_COMMAND;
 
     }
-    
+
     int offset = 1;
 
     canid_t id = 0;
@@ -478,7 +478,7 @@ CanHacker::ERROR CanHacker::parseTransmit(const char *buffer, int length, struct
         id |= CAN_EFF_FLAG;
     }
     frame->can_id = id;
-    
+
     __u8 dlc = hexCharToByte(buffer[offset++]);
     if (dlc > 8) {
         writeDebugStream("DLC > 8\n");
@@ -501,7 +501,7 @@ CanHacker::ERROR CanHacker::parseTransmit(const char *buffer, int length, struct
             frame->data[i] = hexCharToByte(loHex) + (hexCharToByte(hiHex) << 4);
         }
     }
-    
+
     return ERROR_OK;
 }
 
@@ -510,7 +510,7 @@ CanHacker::ERROR CanHacker::createTransmit(const struct can_frame *frame, char *
     int len = frame->can_dlc;
 
     int isRTR = (frame->can_id & CAN_RTR_FLAG) ? 1 : 0;
-    
+
     if (frame->can_id & CAN_ERR_FLAG) {
         return ERROR_ERROR_FRAME_NOT_SUPPORTED;
     } else if (frame->can_id & CAN_EFF_FLAG) {
@@ -532,7 +532,7 @@ CanHacker::ERROR CanHacker::createTransmit(const struct can_frame *frame, char *
             offset += 2;
         }
     }
-    
+
     if (_timestampEnabled) {
         uint16_t ts = getTimestamp();
         put_hex_byte(buffer + offset, ts >> 8);
@@ -540,14 +540,14 @@ CanHacker::ERROR CanHacker::createTransmit(const struct can_frame *frame, char *
         put_hex_byte(buffer + offset, ts);
         offset += 2;
     }
-    
+
     buffer[offset++] = CR;
     buffer[offset] = '\0';
-    
+
     if (offset >= length) {
         return ERROR_BUFFER_OVERFLOW;
     }
-    
+
     return ERROR_OK;
 }
 
@@ -560,11 +560,11 @@ CanHacker::ERROR CanHacker::receiveTransmitCommand(const char *buffer, const int
         writeDebugStream("Transmit command while not connected\n");
         return ERROR_NOT_CONNECTED;
     }
-    
+
     if (_listenOnly) {
         return ERROR_LISTEN_ONLY;
     }
-    
+
     struct can_frame frame;
     ERROR error = parseTransmit(buffer, length, &frame);
     if (error != ERROR_OK) {
@@ -606,6 +606,15 @@ CanHacker::ERROR CanHacker::receiveTimestampCommand(const char *buffer, const in
 
 CanHacker::ERROR CanHacker::receiveCloseCommand(const char *buffer, const int length) {
     writeDebugStream("receiveCloseCommand\n");
+
+    if (length != 1) {
+        return ERROR_INVALID_COMMAND;
+    }
+
+    if (buffer[0] != COMMAND_CLOSE_CAN_CHAN) {
+        return ERROR_INVALID_COMMAND;
+    }
+
     if (!isConnected()) {
         return writeStream(BEL);
     }
@@ -617,6 +626,15 @@ CanHacker::ERROR CanHacker::receiveCloseCommand(const char *buffer, const int le
 }
 
 CanHacker::ERROR CanHacker::receiveOpenCommand(const char *buffer, const int length) {
+
+    if (length != 1) {
+        return ERROR_INVALID_COMMAND;
+    }
+
+    if (buffer[0] != COMMAND_OPEN_CAN_CHAN) {
+        return ERROR_INVALID_COMMAND;
+    }
+
     writeDebugStream("receiveOpenCommand\n");
     ERROR error = connectCan();
     if (error != ERROR_OK) {
@@ -626,6 +644,15 @@ CanHacker::ERROR CanHacker::receiveOpenCommand(const char *buffer, const int len
 }
 
 CanHacker::ERROR CanHacker::receiveListenOnlyCommand(const char *buffer, const int length) {
+
+    if (length != 1) {
+        return ERROR_INVALID_COMMAND;
+    }
+
+    if (buffer[0] != COMMAND_LISTEN_ONLY) {
+        return ERROR_INVALID_COMMAND;
+    }
+
     writeDebugStream("receiveListenOnlyCommand\n");
     if (isConnected()) {
         writeStream(BEL);
@@ -649,29 +676,29 @@ CanHacker::ERROR CanHacker::receiveSetAcrCommand(const char *buffer, const int l
         id <<= 4;
         id += hexCharToByte(buffer[i]);
     }
-    
+
     bool beenConnected = isConnected();
     ERROR error;
-    
+
     if (beenConnected) {
         error = disconnectCan();
         if (error != ERROR_OK) {
             return error;
         }
     }
-    
+
     error = setFilter(id);
     if (error != ERROR_OK) {
         return error;
     }
-    
+
     if (beenConnected) {
         error = connectCan();
         if (error != ERROR_OK) {
             return error;
         }
     }
-    
+
     return writeStream(CR);
 }
 
@@ -688,39 +715,50 @@ CanHacker::ERROR CanHacker::receiveSetAmrCommand(const char *buffer, const int l
         id <<= 4;
         id += hexCharToByte(buffer[i]);
     }
-    
+
     bool beenConnected = isConnected();
     ERROR error;
-    
+
     if (beenConnected) {
         error = disconnectCan();
         if (error != ERROR_OK) {
             return error;
         }
     }
-    
+
     error = setFilterMask(id);
     if (error != ERROR_OK) {
         return error;
     }
-    
+
     if (beenConnected) {
         error = connectCan();
         if (error != ERROR_OK) {
             return error;
         }
     }
-    
+
     return writeStream(CR);
 }
 
-CanHacker::ERROR CanHacker::setLoopbackEnabled(const bool value) {
+CanHacker::ERROR CanHacker::enableLoopback() {
     if (isConnected()) {
         writeDebugStream("Loopback cannot be changed while connected\n");
         return ERROR_CONNECTED;
     }
-    
-    _loopback = value;
-    
+
+    _loopback = true;
+
+    return ERROR_OK;
+}
+
+CanHacker::ERROR CanHacker::disableLoopback() {
+    if (isConnected()) {
+        writeDebugStream("Loopback cannot be changed while connected\n");
+        return ERROR_CONNECTED;
+    }
+
+    _loopback = false;
+
     return ERROR_OK;
 }
