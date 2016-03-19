@@ -215,6 +215,8 @@ CanHacker::ERROR CanHacker::processInterrupt() {
         return ERROR_NOT_CONNECTED;
     }
 
+    uint8_t irq = mcp2515->getInterrupts();
+
     if (irq & MCP2515::CANINTF_ERRIF) {
         // reset RXnOVR errors
         mcp2515->clearRXnOVR();
