@@ -215,8 +215,6 @@ CanHacker::ERROR CanHacker::processInterrupt() {
         return ERROR_NOT_CONNECTED;
     }
 
-    uint8_t irq = mcp2515->getInterrupts();
-
     if (irq & MCP2515::CANINTF_ERRIF) {
         // reset RXnOVR errors
         mcp2515->clearRXnOVR();
@@ -238,19 +236,28 @@ CanHacker::ERROR CanHacker::processInterrupt() {
     
     /*if (irq & (MCP2515::CANINTF_TX0IF | MCP2515::CANINTF_TX1IF | MCP2515::CANINTF_TX2IF)) {
         _debugStream->print("MCP_TXxIF\r\n");
-        stopAndBlink(1);
+        //stopAndBlink(1);
     }*/
      
     
      
-    /*if (irq & MCP2515::CANINTF_WAKIF) {
+    if (irq & MCP2515::CANINTF_WAKIF) {
         _debugStream->print("MCP_WAKIF\r\n");
-        stopAndBlink(3);
-    }*/
+        //stopAndBlink(3);
+    }
+    
+    if (irq & MCP2515::CANINTF_ERRIF) {
+		_debugStream->print("ERRIF\r\n");
+		
+		//return ERROR_MCP2515_MERRF;
+		mcp2515->clearMERR();
+	}
      
     if (irq & MCP2515::CANINTF_MERRF) {
-        _debugStream->print("MCP_MERRF\r\n");
-        return ERROR_MCP2515_MERRF;
+        _debugStream->print("MERRF\r\n");
+        
+        //return ERROR_MCP2515_MERRF;
+        mcp2515->clearInterrupts();
     }
     
     return ERROR_OK;
