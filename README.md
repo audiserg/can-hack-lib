@@ -11,3 +11,9 @@ Use that [Library](https://github.com/autowp/arduino-mcp2515) to communicate wit
 
 Testes with Arduino Nano.
 On Arduino Uno have problem with too long boot period and losing first command
+
+## Documentation
+
+[English](docs/en/)
+
+[Русский](docs/ru/)
