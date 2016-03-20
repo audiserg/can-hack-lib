@@ -11,6 +11,7 @@
 - поддержка remote фреймов (RTR)
 - поддержка фильтра по ID (маска + код)
 - интерфейс, работающий со [Stream](https://www.arduino.cc/en/Reference/Stream): возможность работы с Serial, SoftwareSerial, Ethernet и другими интерфейсами 
+- поддерживаемые скорости can шины от 10Kbps до 1Mbps
 
 ## Установка библиотеки
 

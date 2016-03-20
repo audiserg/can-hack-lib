@@ -11,6 +11,7 @@ Implement communication with CAN bus via MCP2515 by CanHacker (lawicel) protocol
 - supports remote frames (RTR)
 - supports filter by ID (mask + code)
 - interface using [Stream](https://www.arduino.cc/en/Reference/Stream): ability to work with Serial, SoftwareSerial, Ethernet and other
+- supported can baudrates from 10Kbps up to 1Mbps
 
 ## Library Installation
 
