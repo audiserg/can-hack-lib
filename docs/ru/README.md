@@ -13,6 +13,7 @@
 - интерфейс, работающий со [Stream](https://www.arduino.cc/en/Reference/Stream): возможность работы с Serial, SoftwareSerial, Ethernet и другими интерфейсами 
 - поддерживаемые скорости can шины от 10Kbps до 1Mbps
 - поддержка [CanHacker](http://www.mictronics.de/projects/usb-can-bus/) (приложение для Windows)
+- поддержка [CANreader](https://github.com/autowp/CANreader) (приложение для Android)
 
 ## Установка библиотеки
 
