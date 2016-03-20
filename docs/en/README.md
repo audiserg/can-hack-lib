@@ -54,7 +54,7 @@ void loop() {
 
 ## Protocol
 
-Protocol CanHacker (lawicel) described in (CanHacker for Windows documentation)[http://www.mictronics.de/projects/usb-can-bus/]
+Protocol CanHacker (lawicel) described in [CanHacker for Windows documentation](http://www.mictronics.de/projects/usb-can-bus/)
 
 Library implements it partially. Suported commands listed below.
 
@@ -80,7 +80,7 @@ Return: [CR]
 
 Set acceptance code. This command works only if controller in reset mode.
 
-xxxxxxxx = Acceptance Code in hexadecimal
+xxxxxxxx - Acceptance Code in hexadecimal
 
 Default value after power-up is 0x00000000 to receive all frames.
 
@@ -90,7 +90,7 @@ Return: [CR] or [BEL]
 
 Set acceptance mask. This command works only if controller is setup with command `S` and in reset mode.
 
-xxxxxxxx = Acceptance Mask in hexadecimal
+xxxxxxxx - Acceptance Mask in hexadecimal
 
 Default value after power-up is 0xFFFFFFFF to receive all frames.
 
@@ -102,7 +102,7 @@ Read serial number from device.
 
 Return: Nxxxx[CR]
 
-xxxx = Serial number in alphanumeric characters.
+xxxx - Serial number in alphanumeric characters.
 
 ### `O[CR]`
 
@@ -195,8 +195,8 @@ Read detailed firmware version from device.
 Return: vmami[CR]
 
 ```
-ma = major version number
-mi = minor version number
+ma - major version number
+mi - minor version number
 ```
 
 ### `Zv[CR]`
@@ -213,26 +213,24 @@ Each increment time stamp indicates 1ms within the 60000ms frame.
 
 All incoming frames are sent after successful receiving, optional with time stamp.
 
-No polling is needed.
+No polling is needed. They will be sent in the following format:
 
-They will be sent in the following format:
-
-11 Bit ID Frame
+11 bit ID Frame
 ```
 tiiiLDDDDDDDDDDDDDDDD[ssss][CR]
 ```
 
-11 Bit ID Remote Frame
+11 bit ID Remote Frame
 ```
 riiiL[ssss][CR]
 ```
 
-29 Bit ID Frame
+29 bit ID Frame
 ```
 TiiiiiiiiLDDDDDDDDDDDDDDDD[ssss][CR]
 ```
 
-29 Bit ID RemoteFrame
+29 bit ID Remote Frame
 ```
 RiiiiiiiiL[ssss][CR]
 ```
