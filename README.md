@@ -30,3 +30,7 @@ Implement communication with CAN bus via MCP2515 by CanHacker (lawicel) protocol
 
 Testes with Arduino Nano.
 On Arduino Uno have problem with too long boot period and losing first command
+
+## Contributing
+
+Feel free to open issues, create pull requests and other contributions

@@ -70,3 +70,7 @@ void loop() {
 Protocol CanHacker (lawicel) described in [CanHacker for Windows documentation](http://www.mictronics.de/projects/usb-can-bus/)
 
 Library implements it partially. [Suported commands listed here](protocol.md).
+
+## Contributing
+
+Feel free to open issues, create pull requests and other contributions
