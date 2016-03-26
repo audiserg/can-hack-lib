@@ -38,7 +38,7 @@ CanHacker::CanHacker(Stream *stream, Stream *debugStream, uint8_t cs) {
     _stream = stream;
     _debugStream = debugStream;
 
-    writeDebugStream("Initialization\n");
+    writeDebugStream(F("Initialization\n"));
 
     _cs = cs;
     mcp2515 = new MCP2515(_cs);
@@ -57,7 +57,7 @@ Stream *CanHacker::getInterfaceStream() {
 CanHacker::ERROR CanHacker::connectCan() {
     MCP2515::ERROR error = mcp2515->setBitrate(bitrate);
     if (error != MCP2515::ERROR_OK) {
-        writeDebugStream("setBitrate error:\n");
+        writeDebugStream(F("setBitrate error:\n"));
         writeDebugStream((int)error);
         writeDebugStream("\n");
         return ERROR_MCP2515_INIT_BITRATE;
@@ -145,60 +145,60 @@ uint16_t CanHacker::getTimestamp() {
 
 CanHacker::ERROR CanHacker::receiveSetBitrateCommand(const char *buffer, const int length) {
     if (isConnected()) {
-        writeDebugStream("Bitrate command cannot be called while connected\n");
+        writeDebugStream(F("Bitrate command cannot be called while connected\n"));
         writeStream(BEL);
         return ERROR_CONNECTED;
     }
 
     if (length < 2) {
         writeStream(BEL);
-        writeDebugStream("Bitrate command must by 2 bytes long\n");
+        writeDebugStream(F("Bitrate command must by 2 bytes long\n"));
         writeDebugStream((const uint8_t*)buffer, length);
         writeDebugStream('\n');
         return ERROR_INVALID_COMMAND;
     }
     switch(buffer[1]) {
         case '0':
-            writeDebugStream("Set bitrate 10KBPS\n");
+            writeDebugStream(F("Set bitrate 10KBPS\n"));
             bitrate = CAN_10KBPS;
             break;
         case '1':
-            writeDebugStream("Set bitrate 20KBPS\n");
+            writeDebugStream(F("Set bitrate 20KBPS\n"));
             bitrate = CAN_20KBPS;
             break;
         case '2':
-            writeDebugStream("Set bitrate 50KBPS\n");
+            writeDebugStream(F("Set bitrate 50KBPS\n"));
             bitrate = CAN_50KBPS;
             break;
         case '3':
-            writeDebugStream("Set bitrate 100KBPS\n");
+            writeDebugStream(F("Set bitrate 100KBPS\n"));
             bitrate = CAN_100KBPS;
             break;
         case '4':
-            writeDebugStream("Set bitrate 125KBPS\n");
+            writeDebugStream(F("Set bitrate 125KBPS\n"));
             bitrate = CAN_125KBPS;
             break;
         case '5':
-            writeDebugStream("Set bitrate 250KBPS\n");
+            writeDebugStream(F("Set bitrate 250KBPS\n"));
             bitrate = CAN_250KBPS;
             break;
         case '6':
-            writeDebugStream("Set bitrate 500KBPS\n");
+            writeDebugStream(F("Set bitrate 500KBPS\n"));
             bitrate = CAN_500KBPS;
             break;
         case '7':
-            writeDebugStream("Bitrate 7 is not supported\n");
+            writeDebugStream(F("Bitrate 7 is not supported\n"));
             writeDebugStream((const uint8_t*)buffer, length);
             writeDebugStream('\n');
             writeStream(BEL);
             return ERROR_INVALID_COMMAND;
             break;
         case '8':
-            writeDebugStream("Set bitrate 1000KBPS\n");
+            writeDebugStream(F("Set bitrate 1000KBPS\n"));
             bitrate = CAN_1000KBPS;
             break;
         default:
-            writeDebugStream("Unexpected bitrate\n");
+            writeDebugStream(F("Unexpected bitrate\n"));
             writeDebugStream((const uint8_t*)buffer, length);
             writeDebugStream('\n');
             writeStream(BEL);
@@ -211,7 +211,8 @@ CanHacker::ERROR CanHacker::receiveSetBitrateCommand(const char *buffer, const i
 
 CanHacker::ERROR CanHacker::processInterrupt() {
     if (!isConnected()) {
-        writeDebugStream("Process interrupt while not connected\n");
+        return ERROR_OK;
+        writeDebugStream(F("Process interrupt while not connected\n"));
         return ERROR_NOT_CONNECTED;
     }
 
@@ -244,19 +245,19 @@ CanHacker::ERROR CanHacker::processInterrupt() {
 
 
     if (irq & MCP2515::CANINTF_WAKIF) {
-        _debugStream->print("MCP_WAKIF\r\n");
+        _debugStream->print(F("MCP_WAKIF\r\n"));
         mcp2515->clearInterrupts();
     }
 
     if (irq & MCP2515::CANINTF_ERRIF) {
-        _debugStream->print("ERRIF\r\n");
+        _debugStream->print(F("ERRIF\r\n"));
 
         //return ERROR_MCP2515_MERRF;
         mcp2515->clearMERR();
     }
 
     if (irq & MCP2515::CANINTF_MERRF) {
-        _debugStream->print("MERRF\r\n");
+        _debugStream->print(F("MERRF\r\n"));
 
         //return ERROR_MCP2515_MERRF;
         mcp2515->clearInterrupts();
@@ -267,7 +268,7 @@ CanHacker::ERROR CanHacker::processInterrupt() {
 
 CanHacker::ERROR CanHacker::setFilter(const uint32_t filter) {
     if (isConnected()) {
-        writeDebugStream("Filter cannot be set while connected\n");
+        writeDebugStream(F("Filter cannot be set while connected\n"));
         return ERROR_CONNECTED;
     }
 
@@ -284,7 +285,7 @@ CanHacker::ERROR CanHacker::setFilter(const uint32_t filter) {
 
 CanHacker::ERROR CanHacker::setFilterMask(const uint32_t mask) {
     if (isConnected()) {
-        writeDebugStream("Filter mask cannot be set while connected\n");
+        writeDebugStream(F("Filter mask cannot be set while connected\n"));
         return ERROR_CONNECTED;
     }
 
@@ -327,6 +328,13 @@ CanHacker::ERROR CanHacker::writeDebugStream(const char character) {
 CanHacker::ERROR CanHacker::writeDebugStream(const char *buffer) {
     if (_debugStream != NULL) {
         _debugStream->print(buffer);
+    }
+    return ERROR_OK;
+}
+
+CanHacker::ERROR CanHacker::writeDebugStream(const __FlashStringHelper *ifsh) {
+    if (_debugStream != NULL) {
+        _debugStream->print(ifsh);
     }
     return ERROR_OK;
 }
@@ -383,10 +391,10 @@ CanHacker::ERROR CanHacker::receiveCommand(const char *buffer, const int length)
         case COMMAND_SET_BTR: {
             if (isConnected()) {
                 writeStream(BEL);
-                writeDebugStream("SET_BTR command cannot be called while connected\n");
+                writeDebugStream(F("SET_BTR command cannot be called while connected\n"));
                 return ERROR_CONNECTED;
             }
-            writeDebugStream("SET_BTR not supported\n");
+            writeDebugStream(F("SET_BTR not supported\n"));
             return writeStream(CR);
         }
 
@@ -405,7 +413,7 @@ CanHacker::ERROR CanHacker::receiveCommand(const char *buffer, const int length)
         case COMMAND_READ_ECR:
         case COMMAND_READ_ALCR: {
             if (!isConnected()) {
-                writeDebugStream("Read status, ecr, alcr while not connected\n");
+                writeDebugStream(F("Read status, ecr, alcr while not connected\n"));
                 writeStream(BEL);
                 return ERROR_NOT_CONNECTED;
             }
@@ -414,7 +422,7 @@ CanHacker::ERROR CanHacker::receiveCommand(const char *buffer, const int length)
 
         default: {
             writeStream(BEL);
-            writeDebugStream("Unknown command received\n");
+            writeDebugStream(F("Unknown command received\n"));
             writeDebugStream((const uint8_t*)buffer, length);
             writeDebugStream('\n');
             return ERROR_UNKNOWN_COMMAND;
@@ -433,7 +441,7 @@ CanHacker::ERROR CanHacker::receiveCanFrame(const struct can_frame *frame) {
 
 CanHacker::ERROR CanHacker::parseTransmit(const char *buffer, int length, struct can_frame *frame) {
     if (length < MIN_MESSAGE_LENGTH) {
-        writeDebugStream("Transmit message lenght < minimum\n");
+        writeDebugStream(F("Transmit message lenght < minimum\n"));
         writeDebugStream((const uint8_t*)buffer, length);
         writeDebugStream('\n');
         return ERROR_INVALID_COMMAND;
@@ -456,7 +464,7 @@ CanHacker::ERROR CanHacker::parseTransmit(const char *buffer, int length, struct
             isRTR = 1;
             break;
         default:
-            writeDebugStream("Unexpected type of transmit command\n");
+            writeDebugStream(F("Unexpected type of transmit command\n"));
             writeDebugStream((const uint8_t*)buffer, length);
             writeDebugStream('\n');
             return ERROR_INVALID_COMMAND;
@@ -481,13 +489,13 @@ CanHacker::ERROR CanHacker::parseTransmit(const char *buffer, int length, struct
 
     __u8 dlc = hexCharToByte(buffer[offset++]);
     if (dlc > 8) {
-        writeDebugStream("DLC > 8\n");
+        writeDebugStream(F("DLC > 8\n"));
         writeDebugStream((const uint8_t*)buffer, length);
         writeDebugStream('\n');
         return ERROR_INVALID_COMMAND;
     }
     if (dlc == 0) {
-        writeDebugStream("DLC = 0\n");
+        writeDebugStream(F("DLC = 0\n"));
         writeDebugStream((const uint8_t*)buffer, length);
         writeDebugStream('\n');
         return ERROR_INVALID_COMMAND;
@@ -557,7 +565,7 @@ CanHacker::ERROR CanHacker::sendFrame(const struct can_frame *frame) {
 
 CanHacker::ERROR CanHacker::receiveTransmitCommand(const char *buffer, const int length) {
     if (!isConnected()) {
-        writeDebugStream("Transmit command while not connected\n");
+        writeDebugStream(F("Transmit command while not connected\n"));
         return ERROR_NOT_CONNECTED;
     }
 
@@ -581,7 +589,7 @@ CanHacker::ERROR CanHacker::receiveTransmitCommand(const char *buffer, const int
 CanHacker::ERROR CanHacker::receiveTimestampCommand(const char *buffer, const int length) {
     if (length != 2) {
         writeStream(BEL);
-        writeDebugStream("Timestamp command must be 2 bytes long\n");
+        writeDebugStream(F("Timestamp command must be 2 bytes long\n"));
         writeDebugStream((const uint8_t*)buffer, length);
         writeDebugStream('\n');
         return ERROR_INVALID_COMMAND;
@@ -595,7 +603,7 @@ CanHacker::ERROR CanHacker::receiveTimestampCommand(const char *buffer, const in
             return writeStream(CR);
         default:
             writeStream(BEL);
-            writeDebugStream("Timestamp cammand must have value 0 or 1\n");
+            writeDebugStream(F("Timestamp cammand must have value 0 or 1\n"));
             writeDebugStream((const uint8_t*)buffer, length);
             writeDebugStream('\n');
             return ERROR_INVALID_COMMAND;
@@ -605,7 +613,7 @@ CanHacker::ERROR CanHacker::receiveTimestampCommand(const char *buffer, const in
 }
 
 CanHacker::ERROR CanHacker::receiveCloseCommand(const char *buffer, const int length) {
-    writeDebugStream("receiveCloseCommand\n");
+    writeDebugStream(F("receiveCloseCommand\n"));
 
     if (length != 1) {
         return ERROR_INVALID_COMMAND;
@@ -635,7 +643,7 @@ CanHacker::ERROR CanHacker::receiveOpenCommand(const char *buffer, const int len
         return ERROR_INVALID_COMMAND;
     }
 
-    writeDebugStream("receiveOpenCommand\n");
+    writeDebugStream(F("receiveOpenCommand\n"));
     ERROR error = connectCan();
     if (error != ERROR_OK) {
         return error;
@@ -653,10 +661,10 @@ CanHacker::ERROR CanHacker::receiveListenOnlyCommand(const char *buffer, const i
         return ERROR_INVALID_COMMAND;
     }
 
-    writeDebugStream("receiveListenOnlyCommand\n");
+    writeDebugStream(F("receiveListenOnlyCommand\n"));
     if (isConnected()) {
         writeStream(BEL);
-        writeDebugStream("ListenOnly command cannot be called while connected\n");
+        writeDebugStream(F("ListenOnly command cannot be called while connected\n"));
         return ERROR_CONNECTED;
     }
     _listenOnly = true;
@@ -666,7 +674,7 @@ CanHacker::ERROR CanHacker::receiveListenOnlyCommand(const char *buffer, const i
 CanHacker::ERROR CanHacker::receiveSetAcrCommand(const char *buffer, const int length) {
     if (length != 9) {
         writeStream(BEL);
-        writeDebugStream("ACR command must by 9 bytes long\n");
+        writeDebugStream(F("ACR command must by 9 bytes long\n"));
         writeDebugStream((const uint8_t*)buffer, length);
         writeDebugStream('\n');
         return ERROR_INVALID_COMMAND;
@@ -705,7 +713,7 @@ CanHacker::ERROR CanHacker::receiveSetAcrCommand(const char *buffer, const int l
 CanHacker::ERROR CanHacker::receiveSetAmrCommand(const char *buffer, const int length) {
     if (length != 9) {
         writeStream(BEL);
-        writeDebugStream("AMR command must by 9 bytes long\n");
+        writeDebugStream(F("AMR command must by 9 bytes long\n"));
         writeDebugStream((const uint8_t*)buffer, length);
         writeDebugStream('\n');
         return ERROR_INVALID_COMMAND;
@@ -743,7 +751,7 @@ CanHacker::ERROR CanHacker::receiveSetAmrCommand(const char *buffer, const int l
 
 CanHacker::ERROR CanHacker::enableLoopback() {
     if (isConnected()) {
-        writeDebugStream("Loopback cannot be changed while connected\n");
+        writeDebugStream(F("Loopback cannot be changed while connected\n"));
         return ERROR_CONNECTED;
     }
 
@@ -754,7 +762,7 @@ CanHacker::ERROR CanHacker::enableLoopback() {
 
 CanHacker::ERROR CanHacker::disableLoopback() {
     if (isConnected()) {
-        writeDebugStream("Loopback cannot be changed while connected\n");
+        writeDebugStream(F("Loopback cannot be changed while connected\n"));
         return ERROR_CONNECTED;
     }
 

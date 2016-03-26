@@ -24,10 +24,10 @@
 
 class CanHacker {
     public:
-        enum ERROR { 
-            ERROR_OK, 
-            ERROR_CONNECTED, 
-            ERROR_NOT_CONNECTED, 
+        enum ERROR {
+            ERROR_OK,
+            ERROR_CONNECTED,
+            ERROR_NOT_CONNECTED,
             ERROR_UNKNOWN_COMMAND,
             ERROR_INVALID_COMMAND,
             ERROR_ERROR_FRAME_NOT_SUPPORTED,
@@ -73,7 +73,7 @@ class CanHacker {
         bool _isConnected = false;
         Stream *_stream;
         Stream *_debugStream;
-    
+
         enum /*class*/ COMMAND : char {
             COMMAND_SET_BITRATE    = 'S', // set CAN bit rate
             COMMAND_SET_BTR        = 's', // set CAN bit rate via
@@ -96,10 +96,10 @@ class CanHacker {
             COMMAND_WRITE_REG      = 'W', // write register content to SJA1000
             COMMAND_LISTEN_ONLY    = 'L'  // switch to listen only mode
         };
-    
+
         ERROR parseTransmit(const char *buffer, int length, struct can_frame *frame);
         ERROR createTransmit(const struct can_frame *frame, char *buffer, const int length);
-        
+
         uint16_t getTimestamp();
         ERROR setFilter(const uint32_t filter);
         ERROR setFilterMask(const uint32_t mask);
@@ -114,7 +114,8 @@ class CanHacker {
         ERROR writeDebugStream(const char *buffer);
         ERROR writeDebugStream(const int buffer);
         ERROR writeDebugStream(const uint8_t *buffer, size_t size);
-        
+        ERROR writeDebugStream(const __FlashStringHelper *ifsh);
+
         ERROR receiveSetBitrateCommand(const char *buffer, const int length);
         ERROR receiveTransmitCommand(const char *buffer, const int length);
         ERROR receiveTimestampCommand(const char *buffer, const int length);
