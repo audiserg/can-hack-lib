@@ -7,7 +7,7 @@
 
 #include <SPI.h>
 
-const int SPI_CS_PIN = 10; // 10 by default, 53 on mega
+const int SPI_CS_PIN = 53; // 10 by default, 53 on mega
 const int INT_PIN = 2;
 
 CanHackerLineReader *lineReader = NULL;
@@ -25,7 +25,7 @@ void setup() {
     
     
     canHacker = new CanHacker(interfaceStream, debugStream, SPI_CS_PIN);
-    canHacker->enableLoopback(); // uncomment this for loopback
+    //canHacker->enableLoopback(); // uncomment this for loopback
     lineReader = new CanHackerLineReader(canHacker);
     
     pinMode(INT_PIN, INPUT);
