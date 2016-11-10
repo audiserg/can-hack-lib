@@ -19,6 +19,8 @@ CanHacker *canHacker = NULL;
 
 SoftwareSerial softwareSerial(SS_RX_PIN, SS_TX_PIN);
 
+void handleError(const CanHacker::ERROR error);
+
 void setup() {
     Serial.begin(115200);
     SPI.begin();
