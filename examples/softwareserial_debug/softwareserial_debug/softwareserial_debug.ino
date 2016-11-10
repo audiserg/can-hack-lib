@@ -31,19 +31,26 @@ void setup() {
     
     
     canHacker = new CanHacker(interfaceStream, debugStream, SPI_CS_PIN);
-    canHacker->enableLoopback();
+    canHacker->enableLoopback(); // remove to disable loopback test mode
     lineReader = new CanHackerLineReader(canHacker);
     
     pinMode(INT_PIN, INPUT);
 }
 
 void loop() {
+    CanHacker::ERROR error;
+    
     if (digitalRead(INT_PIN) == LOW) {
-        CanHacker::ERROR error = canHacker->processInterrupt();
+        error = canHacker->processInterrupt();
         handleError(error);
     }
+    
+    // uncomment that lines for Leonardo, Pro Micro or Esplora
+    // error = lineReader->process();
+    // handleError(error);
 }
 
+// serialEvent handler not supported by Leonardo, Pro Micro and Esplora
 void serialEvent() {
     CanHacker::ERROR error = lineReader->process();
     handleError(error);
