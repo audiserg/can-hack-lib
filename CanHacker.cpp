@@ -615,7 +615,7 @@ CanHacker::ERROR CanHacker::receiveTimestampCommand(const char *buffer, const in
 CanHacker::ERROR CanHacker::receiveCloseCommand(const char *buffer, const int length) {
     writeDebugStream(F("receiveCloseCommand\n"));
 
-    if (length != 1) {
+    if (length < 1) {
         return ERROR_INVALID_COMMAND;
     }
 
