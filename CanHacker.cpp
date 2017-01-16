@@ -54,7 +54,7 @@ Stream *CanHacker::getInterfaceStream() {
     return _stream;
 }
 
-void CanHacker::setClock(uint8_t clock){
+void CanHacker::setClock(CAN_CLOCK clock){
     canClock = clock;
 }
 
