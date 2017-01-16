@@ -12,6 +12,7 @@
 - поддержка фильтра по ID (маска + код)
 - интерфейс, работающий со [Stream](https://www.arduino.cc/en/Reference/Stream): возможность работы с Serial, SoftwareSerial, Ethernet и другими интерфейсами 
 - поддерживаемые скорости can шины от 10Kbps до 1Mbps
+- поддерживаются модули с разными кварцами - 8, 16, 20 МГц. По умолчанию установлена частота 16 МГц, используйте функцию setClock если у вас модуль с другим кварцем.
 - поддержка [CanHacker](http://www.mictronics.de/projects/usb-can-bus/) (приложение для Windows)
 - поддержка [CANreader](https://github.com/autowp/CANreader) (приложение для Android)
 
