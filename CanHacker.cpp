@@ -54,8 +54,12 @@ Stream *CanHacker::getInterfaceStream() {
     return _stream;
 }
 
+void CanHacker::setClock(CAN_CLOCK clock){
+    canClock = clock;
+}
+
 CanHacker::ERROR CanHacker::connectCan() {
-    MCP2515::ERROR error = mcp2515->setBitrate(bitrate);
+    MCP2515::ERROR error = mcp2515->setBitrate(bitrate, canClock);
     if (error != MCP2515::ERROR_OK) {
         writeDebugStream(F("setBitrate error:\n"));
         writeDebugStream((int)error);

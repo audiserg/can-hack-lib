@@ -47,6 +47,7 @@ class CanHacker {
 
         CanHacker(Stream *stream, Stream *debugStream, uint8_t cs);
         ~CanHacker();
+        void setClock(const CAN_CLOCK clock);
         ERROR receiveCommand(const char *buffer, const int length);
         ERROR receiveCanFrame(const struct can_frame *frame);
         ERROR sendFrame(const struct can_frame *);
@@ -64,6 +65,7 @@ class CanHacker {
         static const char BEL = 7;
         static const uint16_t TIMESTAMP_LIMIT = 0xEA60;
 
+        CAN_CLOCK canClock = MCP_16MHZ;
         bool _timestampEnabled = false;
         bool _listenOnly = false;
         bool _loopback = false;
